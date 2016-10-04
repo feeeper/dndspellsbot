@@ -94,8 +94,6 @@ func parseSpells() (Spells, error) {
 	file, err := os.Open("phb.xml")
 	if err != nil {
 		log.Panic(err)
-	} else {
-		log.Println(file)
 	}
 
 	fi, err := file.Stat()
@@ -116,8 +114,7 @@ func parseSpells() (Spells, error) {
 		log.Println(err)
 		return v, err
 	} else {
-		log.Println(len(v.Spells))
-		log.Println(v.Spells[0])
+		log.Printf("Total spells found: %v", len(v.Spells))
 		return v, err
 	}
 }
