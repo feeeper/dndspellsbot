@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"strings"
+//	"math/rand"
 )
 
 type Config struct {
@@ -22,7 +23,6 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println(configuration.TelegramBotToken)
 
 	bot, err := tgbotapi.NewBotAPI(configuration.TelegramBotToken)
 
@@ -48,25 +48,99 @@ func main() {
 		log.Panic(err)
 	}
 
-	for update := range updates { 
-		query := update.Message.Text
-		filteredSpells := Filter(spells.Spells, func(spell Spell) bool { 
-			return strings.Index(strings.ToLower(spell.Name), strings.ToLower(query)) >= 0
-		})
+	for update := range updates {
+		if update.Message == nil && update.InlineQuery != nil {
+			query := update.InlineQuery.Query
+			filteredSpells := Filter(spells.Spells, func(spell Spell) bool {
+				return strings.Index(strings.ToLower(spell.Name), strings.ToLower(query)) >= 0
+			})
 
-		if len(filteredSpells) == 0 {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "No one spells matches")
-			bot.Send(msg)			
-		}
+			var articles []interface{}
+			if len(filteredSpells) == 0 {
+				msg := tgbotapi.NewInlineQueryResultArticleMarkdown(update.InlineQuery.ID, "No one spells matches", "No one spells matches")
+				articles = append(articles, msg)
+			} else {
+				var i = 0
+				for _, spell := range(filteredSpells) {
+					text := fmt.Sprintf(
+						"*%s*\n" +
+						"*Level* _%v_\n" +
+						"*School* _%s_\n" +
+						"*Time* _%s_\n" +
+						"*Range* _%s_\n" +
+						"*Components* _%s_\n" +
+						"*Duration* _%s_\n" +
+						"*Classes* _%s_\n" +
+						"*Roll* _%s_\n" +
+						"%s",
+						spell.Name,
+						spell.Level,
+						spell.School,
+						spell.Time,
+						spell.Range,
+						spell.Components,
+						spell.Duration,
+						spell.Classes,
+						strings.Join(spell.Rolls, ", "),
+						strings.Join(spell.Texts, "\n"))
 
-		for _, spell := range(filteredSpells) {
-			text := ""
-			for _, t := range(spell.Texts) {
-				text = text + t + "\n"
+					msg := tgbotapi.NewInlineQueryResultArticleMarkdown(spell.Name, spell.Name, text)
+					articles = append(articles, msg)
+					if i >= 10 {
+						break
+					}
+				}
 			}
 
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s\n%s", spell.Name, text))
-			bot.Send(msg)
+			inlineConfig := tgbotapi.InlineConfig{
+				InlineQueryID: update.InlineQuery.ID,
+				IsPersonal:    true,
+				CacheTime:     0,
+				Results: articles,
+			}
+			_, err := bot.AnswerInlineQuery(inlineConfig)
+			if err != nil {
+				log.Println(err)
+			}
+		} else {
+			query := update.Message.Text
+			filteredSpells := Filter(spells.Spells, func(spell Spell) bool {
+				return strings.Index(strings.ToLower(spell.Name), strings.ToLower(query)) >= 0
+			})
+
+			if len(filteredSpells) == 0 {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "No one spells matches")
+				bot.Send(msg)
+			}
+
+			for _, spell := range(filteredSpells) {
+				text := fmt.Sprintf(
+					"*%s*\n" +
+					"*Level* _%v_\n" +
+					"*School* _%s_\n" +
+					"*Time* _%s_\n" +
+					"*Range* _%s_\n" +
+					"*Components* _%s_\n" +
+					"*Duration* _%s_\n" +
+					"*Classes* _%s_\n" +
+					"*Roll* _%s_\n" +
+					"%s",
+					spell.Name,
+					spell.Level,
+					spell.School,
+					spell.Time,
+					spell.Range,
+					spell.Components,
+					spell.Duration,
+					spell.Classes,
+					strings.Join(spell.Rolls, ", "),
+					strings.Join(spell.Texts, "\n"))
+
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
+				msg.ParseMode = "markdown"
+
+				bot.Send(msg)
+			}
 		}
 	}
 }
