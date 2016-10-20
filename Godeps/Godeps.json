@@ -1,0 +1,17 @@
+{
+	"ImportPath": "dnd/dndspellsbot",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v74",
+	"Deps": [
+		{
+			"ImportPath": "github.com/technoweenie/multipartstreamer",
+			"Comment": "v1.0.1",
+			"Rev": "a90a01d73ae432e2611d178c18367fbaa13e0154"
+		},
+		{
+			"ImportPath": "gopkg.in/telegram-bot-api.v4",
+			"Comment": "v4.5.1",
+			"Rev": "a7f48eb2dd301356942677e65bebe0c9aef07013"
+		}
+	]
+}
