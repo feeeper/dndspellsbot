@@ -57,7 +57,9 @@ func main() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates, err := bot.GetUpdatesChan(u)
+	// updates, err := bot.GetUpdatesChan(u)
+
+	updates := bot.ListenForWebhook("/" + bot.Token)
 
 	if err != nil {
 		log.Panic(err)
@@ -69,7 +71,10 @@ func main() {
 	}
 
 	http.HandleFunc("/", MainHandler)
-    go http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	//go http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	go http.ListenAndServe(":" + "9090", nil)
+
+
 
 	for update := range updates {
 		if update.Message == nil && update.InlineQuery != nil {
