@@ -8,10 +8,15 @@ import (
 	"log"
 	"os"
 	"strings"
+	"net/http"
 )
 
 type Config struct {
 	TelegramBotToken string
+}
+
+func MainHandler(resp http.ResponseWriter, _ *http.Request) {
+    resp.Write([]byte("Hi there! I'm DndSpellsBot!"))
 }
 
 func main() {
@@ -62,6 +67,9 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
+	http.HandleFunc("/", MainHandler)
+    go http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 
 	for update := range updates {
 		if update.Message == nil && update.InlineQuery != nil {
