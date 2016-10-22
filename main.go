@@ -70,7 +70,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	http.HandleFunc("/" + bot.Token, MainHandler)
+	http.HandleFunc("/", MainHandler)
 	go http.ListenAndServe(":" + os.Getenv("PORT"), nil)
 	// go http.ListenAndServe(":" + "9090", nil)
 
