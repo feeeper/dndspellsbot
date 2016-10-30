@@ -4,9 +4,22 @@
 	"GodepVersion": "v74",
 	"Deps": [
 		{
+			"ImportPath": "github.com/botanio/sdk/go",
+			"Rev": "de4d0d7a02ddc25bcbb0945e4b83eb14110ff8ae"
+		},
+		{
+			"ImportPath": "github.com/rockneurotiko/gorequest",
+			"Comment": "v0.2.4-72-gb232713",
+			"Rev": "b232713e2cb2bbff22aaee93bfc94d0d1ceba115"
+		},
+		{
 			"ImportPath": "github.com/technoweenie/multipartstreamer",
 			"Comment": "v1.0.1",
 			"Rev": "a90a01d73ae432e2611d178c18367fbaa13e0154"
+		},
+		{
+			"ImportPath": "golang.org/x/net/publicsuffix",
+			"Rev": "f09c4662a0bd6bd8943ac7b4931e185df9471da4"
 		},
 		{
 			"ImportPath": "gopkg.in/telegram-bot-api.v4",
